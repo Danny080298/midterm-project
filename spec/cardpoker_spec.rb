@@ -22,4 +22,11 @@ RSpec.describe Deck do
             expect(@deck.instance_variable_get(:@cards).count).to eq(52)
         end
     end
+    describe "#shuffle!" do
+        it"has different order of cards" do
+            @deck = Deck.new
+            @deck1 = Deck.new
+            expect(@deck.cards[0]).not_to eq(@deck1.cards[0])
+        end
+    end
 end
