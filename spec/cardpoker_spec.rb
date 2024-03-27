@@ -29,4 +29,14 @@ RSpec.describe Deck do
             expect(@deck.cards[0]).not_to eq(@deck1.cards[0])
         end
     end
+
+    describe "#deal" do
+        it "deals 5 cards and remain cards" do 
+            current = @deck.instance_variable_get(:@cards).count
+            deal = @deck.deal(5)
+            expect(deal.count)to eq(5)
+            expect(current = @deck.instance_variable_get(:@cards).count)to eq(current - deal)
+        end 
+    end
+
 end

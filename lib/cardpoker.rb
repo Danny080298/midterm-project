@@ -24,6 +24,9 @@ class Deck
         @cards.shuffle!
     end
     
+    def deal(number)
+        @cards.pop(number)
+    end
 end
 
 
@@ -34,9 +37,20 @@ if deck.cards.length == 52
 else
     puts "Get a new deck"
 end
-if "#{deck.cards.first}" != "#{deck1.cards.first}"
-    puts "Your hand is"
-    puts"#{deck.cards[0]} and #{deck.cards[1]} and #{deck.cards[2]},#{deck.cards[3]}, #{deck.cards[4] }"
+# if "#{deck.cards.first}" != "#{deck1.cards.first}"
+#     puts "Your hand is"
+#     puts"#{deck.cards[0]} and #{deck.cards[1]} and #{deck.cards[2]},#{deck.cards[3]}, #{deck.cards[4] }"
+# else
+#     puts "This deck is not shuffled"
+# end
+
+deal= deck.deal(5)
+
+if deal.length != 5
+    puts "This player doesn't have enough cards"
 else
-    puts "This deck is not shuffled"
+    puts "Remaing cards: #{deck.cards.length}"
+
+    puts "Let's play"
+    deal.each { |card| puts card }
 end
