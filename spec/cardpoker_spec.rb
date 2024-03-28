@@ -73,4 +73,18 @@ RSpec.describe Hand do
             end
         end
     end
+
+    describe "#straight_flush?" do
+        context 'when the hand is straight flush' do
+            it 'return true' do
+                cards = [Card.new("Hearts", "2"), 
+                        Card.new("Hearts", "3"), 
+                        Card.new("Hearts", "4"), 
+                        Card.new("Hearts", "5"), 
+                        Card.new("Hearts", "6")]
+                hand = Hand.new(cards)
+                expect(hand.straight_flush?).to eq true
+            end
+        end
+    end
 end

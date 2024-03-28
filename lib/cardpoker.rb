@@ -44,6 +44,9 @@ class Hand
     #best rank
     #royal straight flush
     #straight flush
+    def straight_flush?
+        flush? && straight?
+    end
     #four of a kind
     #full house
     #flush
@@ -68,7 +71,7 @@ class Hand
         
         unless rank
           puts "Unexpected card value: #{value}. Please check the card values."
-          rank = 0 # You might choose to throw an error or assign a default value
+          rank = 0
         end
        
         rank
@@ -76,9 +79,10 @@ class Hand
 end
 
 
-cards = [Card.new("Hearts", "2"), Card.new("Spades", "3"), Card.new("Hearts", "4"), Card.new("Hearts", "5"), Card.new("Hearts", "6")]
+cards = [Card.new("Hearts", "2"), Card.new("Hearts", "3"), Card.new("Hearts", "4"), Card.new("Hearts", "5"), Card.new("Hearts", "6")]
 
 hand = Hand.new(cards)
 
 puts "this is flush hand #{hand.flush?} "
 puts "this is straight hand #{hand.straight?} "
+puts "this is straight flush hand #{hand.straight_flush?}"
