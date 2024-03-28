@@ -59,6 +59,10 @@ class Hand
     end
 
     #full house
+    def full_house?
+        three_of_a_kind? && pair?
+    end
+
     #flush
     def flush?
         @cards.map(&:suit).uniq.size == 1
@@ -105,7 +109,7 @@ class Hand
 end
 
 
-cards = [Card.new("Hearts", "10"), Card.new("Clubs", "10"), Card.new("Spades", "4"), Card.new("Diamonds", "7"), Card.new("Hearts", "3")]
+cards = [Card.new("Hearts", "10"), Card.new("Clubs", "10"), Card.new("Spades", "4"), Card.new("Diamonds", "4"), Card.new("Hearts", "4")]
 
 hand = Hand.new(cards)
 
@@ -117,3 +121,4 @@ puts "this is four of a kind #{hand.four_of_a_kind?}"
 puts "this is three of a kind #{hand.three_of_a_kind?}"
 puts "this is a two pairs #{hand.two_pair?}"
 puts "this is a pair #{hand.pair?}"
+puts "this is full house #{hand.full_house?}"

@@ -153,4 +153,17 @@ RSpec.describe Hand do
             end
         end
     end
+    describe "#full_house?" do
+        context "when the hand is full house" do
+            it "return true" do
+                cards = [Card.new("Hearts", "10"), 
+                        Card.new("Clubs", "10"), 
+                        Card.new("Spades", "4"), 
+                        Card.new("Diamonds", "4"), 
+                        Card.new("Hearts", "4")]
+                hand = Hand.new(cards)
+                expect(hand.full_house?).to eq true
+            end
+        end
+    end
 end
