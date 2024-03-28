@@ -224,19 +224,19 @@ RSpec.describe Hand do
 end
 
 RSpec.describe Player do
-    # describe "#fold" do
-    #     context "the player gave up" do
-    #         it "the player is fold" do
-    #             hand = [Card.new('Hearts', '10'), 
-    #             Card.new('Spades', 'Ace')]
-    #             player = Player.new(hand, 100)
+    describe "#fold" do
+        context "the player gave up" do
+            it "the player is fold" do
+                hand = [Card.new('Hearts', '10'), 
+                Card.new('Spades', 'Ace')]
+                player = Player.new(hand, 100)
 
-    #             expect(player.is_active).to eq true
-    #             player.fold
-    #             expect(player.is_active).to eq false
-    #         end
-    #     end
-    # end
+                expect(player.is_active).to eq true
+                player.fold
+                expect(player.is_active).to eq false
+            end
+        end
+    end
     describe '#discard_and_draw' do
         let(:deck) { Deck.new } # Ensure this setup matches your actual Deck class
         let(:initial_hand) { deck.deal(5) }

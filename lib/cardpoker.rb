@@ -218,6 +218,13 @@ class Player
         draw_new_cards(discard_positions.size, deck)
         puts "New hand: #{hand_to_s}"
     end
+    #fold
+    def fold
+        @is_active = false
+    end
+
+    
+
     private
     
     def discard_cards(positions)
@@ -232,18 +239,20 @@ class Player
     def hand_to_s
         @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
     end
-    #fold
+  
+
+
     #see
     #raise
 
 
 end    
 
-deck = Deck.new
-initial_hand = deck.deal(5) 
-player = Player.new(initial_hand, 100) 
-puts player
-discard_positions = [1, 3, 5]
+# deck = Deck.new
+# initial_hand = deck.deal(5) 
+# player = Player.new(initial_hand, 100) 
+# puts player
+# discard_positions = [1, 3, 5]
 
-player.discard_and_draw(discard_positions, deck)
-puts player
+# player.discard_and_draw(discard_positions, deck)
+# puts player
