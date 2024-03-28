@@ -223,7 +223,19 @@ class Player
         @is_active = false
     end
 
+    def see(current_bet_amount)
+        amount_needed_to_call = current_bet_amount - @current_bet
     
+        if amount_needed_to_call <= @pot
+          @pot -= amount_needed_to_call
+          @current_bet = current_bet_amount
+          puts "Player calls and matches the current bet of #{current_bet_amount}. Remaining pot: #{@pot}."
+        else
+          puts "Player cannot cover the bet of #{current_bet_amount} with only #{@pot} in the pot."
+          fold
+        end
+    end
+
 
     private
     
@@ -240,8 +252,6 @@ class Player
         @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
     end
   
-
-
     #see
     #raise
 
@@ -256,3 +266,4 @@ end
 
 # player.discard_and_draw(discard_positions, deck)
 # puts player
+

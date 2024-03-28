@@ -253,5 +253,30 @@ RSpec.describe Player do
             end
         end
     end
+    describe '#see' do
+        let(:initial_hand) { [double('Card', suit: 'Hearts', value: '10'), double('Card', suit: 'Spades', value: 'Ace')] } 
+        let(:player) { Player.new(initial_hand, 100) }
+        context 'when the player has enough in the pot' do
+            let(:current_bet_amount) { 50 }
+
+            it 'matches the current bet and reduces the pot ' do
+                expect { player.see(current_bet_amount) }
+                .to change { player.pot }.from(100).to(50)
+                .and change { player.current_bet }.from(0).to(current_bet_amount)
+            end 
+        end
+    
+
+        context 'when the player does not have enough in the pot' do
+            let(:current_bet_amount) { 150 } 
+
+            it 'folds the player automatically due to insufficient funds' do
+                expect { player.see(current_bet_amount) }
+                    .to change { player.is_active }.from(true).to(false)
+                    .and change { player.pot }.by(0) 
+
+            end
+        end
+    end
 
 end
