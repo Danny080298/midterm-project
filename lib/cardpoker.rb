@@ -51,15 +51,34 @@ class Hand
         @cards.map(&:suit).uniq.size == 1
     end
     #straight
+    def straight?
+        values = @cards.map { |card| card_rank(card.value) }.sort
+        values.each_cons(2).all? { |first, second| second == first + 1 }
+    end
     #three of a kind
     #two pair 
     #one pair
     #high card
+
+    def card_rank(value)
+        ranks = {'2' => 2, '3' => 3, '4' => 4, '5' => 5, 
+        '6' => 6, '7' => 7, '8' => 8, '9' => 9, '10' => 10, 
+        'Jack' => 11, 'Queen' => 12, 'King' => 13, 'Ace' => 14}
+        rank = ranks[value]
+        
+        unless rank
+          puts "Unexpected card value: #{value}. Please check the card values."
+          rank = 0 # You might choose to throw an error or assign a default value
+        end
+       
+        rank
+    end
 end
 
 
-cards = [Card.new("Hearts", "10"), Card.new("Hearts", "3"), Card.new("Hearts", "2"), Card.new("Hearts", "6"), Card.new("Hearts", "9")]
+cards = [Card.new("Hearts", "2"), Card.new("Spades", "3"), Card.new("Hearts", "4"), Card.new("Hearts", "5"), Card.new("Hearts", "6")]
 
 hand = Hand.new(cards)
 
 puts "this is flush hand #{hand.flush?} "
+puts "this is straight hand #{hand.straight?} "

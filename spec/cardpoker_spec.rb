@@ -60,4 +60,17 @@ RSpec.describe Hand do
         end
       end
     end
+    describe "#staight?" do 
+        context 'when the hand is straight' do
+            it 'return true' do
+                cards = [Card.new("Clubs", "2"), 
+                        Card.new("Hearts", "3"), 
+                        Card.new("Hearts", "4"), 
+                        Card.new("Hearts", "5"), 
+                        Card.new("Hearts", "6")]
+                hand = Hand.new(cards)
+                expect(hand.straight?).to eq true
+            end
+        end
+    end
 end
