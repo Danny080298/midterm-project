@@ -5,7 +5,7 @@ class Card
         @suit, @value = suit, value
     end
     def to_s
-        "#{@value} of #{@suit}"
+        "#{@value} #{@suit}"
     end
 
 end
@@ -29,28 +29,37 @@ class Deck
     end
 end
 
+class Hand
 
-deck = Deck.new
-deck1 = Deck.new 
-if deck.cards.length == 52
-    puts "let play"
-else
-    puts "Get a new deck"
+    attr_reader :cards
+
+    def initialize(cards)
+        @cards = cards
+    end
+    def to_s
+        card_descriptions = @cards.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
+        "Hand contains: #{card_descriptions}"
+    end
+
+    #best rank
+    #royal straight flush
+    #straight flush
+    #four of a kind
+    #full house
+    #flush
+    def flush?
+        @cards.map(&:suit).uniq.size == 1
+    end
+    #straight
+    #three of a kind
+    #two pair 
+    #one pair
+    #high card
 end
-# if "#{deck.cards.first}" != "#{deck1.cards.first}"
-#     puts "Your hand is"
-#     puts"#{deck.cards[0]} and #{deck.cards[1]} and #{deck.cards[2]},#{deck.cards[3]}, #{deck.cards[4] }"
-# else
-#     puts "This deck is not shuffled"
-# end
 
-deal= deck.deal(5)
 
-if deal.length != 5
-    puts "This player doesn't have enough cards"
-else
-    puts "Remaing cards: #{deck.cards.length}"
+cards = [Card.new("Hearts", "10"), Card.new("Hearts", "3"), Card.new("Hearts", "2"), Card.new("Hearts", "6"), Card.new("Hearts", "9")]
 
-    puts "Let's play"
-    deal.each { |card| puts card }
-end
+hand = Hand.new(cards)
+
+puts "this is flush hand #{hand.flush?} "

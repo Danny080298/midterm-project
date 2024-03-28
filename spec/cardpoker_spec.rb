@@ -17,26 +17,47 @@ RSpec.describe Card do
 end
 RSpec.describe Deck do
     describe "#intialize" do
-        it "have 52 cards" do
-            @deck = Deck.new
-            expect(@deck.instance_variable_get(:@cards).count).to eq(52)
+        context "when a new deck is created" do
+            it "have 52 cards" do
+                deck = Deck.new
+                expect(deck.cards.count).to eq(52)
+            end
         end
     end
     describe "#shuffle!" do
-        it"has different order of cards" do
-            @deck = Deck.new
-            @deck1 = Deck.new
-            expect(@deck.cards[0]).not_to eq(@deck1.cards[0])
+        context "when the deck is shuffled" do
+
+            it"has different order of cards" do
+                @deck = Deck.new
+                @deck1 = Deck.new
+                expect(@deck.cards).not_to eq(@deck1.cards)
+            end
         end
     end
 
     describe "#deal" do
-        it "deals 5 cards and remain cards" do 
-            current = @deck.instance_variable_get(:@cards).count
-            deal = @deck.deal(5)
-            expect(deal.count)to eq(5)
-            expect(current = @deck.instance_variable_get(:@cards).count)to eq(current - deal)
-        end 
-    end
+        context 'Dealing 5 cards and display remain cards' do
+            it "deals 5 cards and remain cards" do 
+                deck = Deck.new
 
+                expect { deck.deal(5) }.to change { deck.cards.count }.by(-5)
+            end
+        end
+    end
+end
+
+RSpec.describe Hand do
+    describe '#flush?' do
+      context 'when the hand is a flush' do
+        it 'returns true' do
+          cards = [Card.new("Hearts", "10"), 
+                   Card.new("Hearts", "3"), 
+                   Card.new("Hearts", "2"), 
+                   Card.new("Hearts", "6"),
+                   Card.new("Hearts", "9")]
+          hand = Hand.new(cards)
+          expect(hand.flush?).to eq true
+        end
+      end
+    end
 end
