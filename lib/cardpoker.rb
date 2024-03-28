@@ -20,6 +20,10 @@ class Deck
         @cards = SUITS.product(VALUES).map { |suit, value| Card.new(suit, value) }
         shuffle!
     end
+    def to_s
+        @cards.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
+    end
+    
     def shuffle!
         @cards.shuffle!
     end
@@ -27,6 +31,7 @@ class Deck
     def deal(number)
         @cards.pop(number)
     end
+
 end
 
 class Hand
@@ -184,32 +189,30 @@ class Hand
 end
 
 
-cards1 = [Card.new("Hearts", "10"), Card.new("Spades", "10"), Card.new("Hearts", "Queen"), Card.new("Spades", "Queen"), Card.new("Hearts", "King")]
-cards2 = [Card.new("Diamonds", "10"), Card.new("Clubs", "10"), Card.new("Clubs", "Queen"), Card.new("Diamonds", "Queen"), Card.new("Hearts", "Ace")]
+class Player
+    attr_accessor :hand, :pot, :current_bet
+    attr_reader :is_active
 
+    def initialize(hand, pot)
+        @hand = hand
+        @pot = pot
+        @is_active = true
+        @current_bet = 0
+    end
 
-hand1 = Hand.new(cards1)
-hand2 = Hand.new(cards2)
+    def to_s
+        hand_description = @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
+        "Hand: #{hand_description}"
+        "Pot: #{@pot}"
+    end
 
-if hand1 > hand2
-    puts "Hand 1 is stronger."
-elsif hand1 < hand2
-    puts "Hand 2 is stronger."
-else
-    puts "The hands are equal in strength."
-end
+    #to do list
 
-puts "The high card of this hand #{hand2.high_card?}"
+    #discard and draw
+    #fold
+    #see
+    #raise
+    
 
-
-# puts "this is flush hand #{hand.flush?} "
-# puts "this is straight hand #{hand.straight?} "
-# puts "this is straight flush hand #{hand.straight_flush?}"
-# puts "this is royal straight flush hand #{hand.royal_flush?}"
-# puts "this is four of a kind #{hand.four_of_a_kind?}"
-# puts "this is three of a kind #{hand.three_of_a_kind?}"
-# puts "this is a two pairs #{hand.two_pair?}"
-# puts "this is a pair #{hand.pair?}"
-# puts "this is full house #{hand.full_house?}"
-
+end    
 
