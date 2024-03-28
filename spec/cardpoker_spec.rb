@@ -139,4 +139,18 @@ RSpec.describe Hand do
             end
         end
     end
+   
+    describe "#pair?" do
+        context "when the hand is a pair" do
+            it "return true" do
+                cards = [Card.new("Hearts", "10"), 
+                        Card.new("Clubs", "10"), 
+                        Card.new("Spades", "4"), 
+                        Card.new("Diamonds", "5"), 
+                        Card.new("Hearts", "9")]
+                hand = Hand.new(cards)
+                expect(hand.pair?).to eq true
+            end
+        end
+    end
 end
