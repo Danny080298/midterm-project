@@ -30,7 +30,7 @@ class Deck
 end
 
 class Hand
-
+    include Comparable
     attr_reader :cards
 
     def initialize(cards)
@@ -60,20 +60,25 @@ class Hand
 
         case best_rank
         when 'pair','two_pair','three_of_a_kind','four_of_a_kind'
-        
+            compare_multiples(other_hand)
         when 'straight','straight_flush','high_card'
-            
+            high_card<=> other_hand.high_card
         when 'flush', 'full_house'
-
+            high_card <=> other_hand.high_card
+        else
+            0
+        end
     end
+
     def group_cards_by_value
         @cards.group_by(&:value)
     end
+
     def compare_high_card(other_hand)
-        our_kickers = @cards.reject { |card| group_cards_by_value[card.value].size > 1 }.max_by { |card| card_rank(card.value) }
-        other_kickers = other_hand.cards.reject { |card| other_hand.group_cards_by_value[card.value].size > 1 }.max_by { |card| card_rank(card.value) }
+        our_kickers = @cards.reject { |card| group_cards_by_value[card.value].size > 1 }.max_by { |card| card_value(card.value) }
+        other_kickers = other_hand.cards.reject { |card| other_hand.group_cards_by_value[card.value].size > 1 }.max_by { |card| card_value(card.value) }
     
-        card_rank(our_kickers.value) <=> card_rank(other_kickers.value)
+        card_value(our_kickers.value) <=> card_value(other_kickers.value)
     end
 
 
@@ -142,9 +147,12 @@ class Hand
     end
 
     #high card
-    def high_card
-        @cards.max_by { |card| card_rank(card.value) }
+    def high_card?
+        @cards.max_by { |card| card_value(card.value) }
     end
+
+    private
+
     def card_value(value)
         ranks = {'2' => 2, '3' => 3, '4' => 4, '5' => 5, 
         '6' => 6, '7' => 7, '8' => 8, '9' => 9, '10' => 10, 
@@ -158,19 +166,50 @@ class Hand
        
         rank
     end
+
+    def compare_multiples(other_hand)
+        our_grouped_cards = group_cards_by_value.sort_by { |value, cards| [-cards.size, card_value(value)] }
+        their_grouped_cards = other_hand.group_cards_by_value.sort_by { |value, cards| [-cards.size, card_value(value)] }
+    
+        our_grouped_cards.each_with_index do |(_, our_cards), index|
+          their_value, their_cards = their_grouped_cards[index]
+          check_hand = our_cards.size <=> their_cards.size
+          return check_hand unless check_hand == 0
+          check_hand = card_value(our_cards.first.value) <=> card_value(their_cards.first.value)
+          return check_hand unless check_hand == 0
+        end
+    
+        compare_high_card(other_hand)
+    end
 end
 
 
-cards = [Card.new("Hearts", "10"), Card.new("Clubs", "10"), Card.new("Spades", "4"), Card.new("Diamonds", "4"), Card.new("Hearts", "4")]
+cards1 = [Card.new("Hearts", "10"), Card.new("Spades", "10"), Card.new("Hearts", "Queen"), Card.new("Spades", "Queen"), Card.new("Hearts", "King")]
+cards2 = [Card.new("Diamonds", "10"), Card.new("Clubs", "10"), Card.new("Clubs", "Queen"), Card.new("Diamonds", "Queen"), Card.new("Hearts", "Ace")]
 
-hand = Hand.new(cards)
 
-puts "this is flush hand #{hand.flush?} "
-puts "this is straight hand #{hand.straight?} "
-puts "this is straight flush hand #{hand.straight_flush?}"
-puts "this is royal straight flush hand #{hand.royal_flush?}"
-puts "this is four of a kind #{hand.four_of_a_kind?}"
-puts "this is three of a kind #{hand.three_of_a_kind?}"
-puts "this is a two pairs #{hand.two_pair?}"
-puts "this is a pair #{hand.pair?}"
-puts "this is full house #{hand.full_house?}"
+hand1 = Hand.new(cards1)
+hand2 = Hand.new(cards2)
+
+if hand1 > hand2
+    puts "Hand 1 is stronger."
+elsif hand1 < hand2
+    puts "Hand 2 is stronger."
+else
+    puts "The hands are equal in strength."
+end
+
+puts "The high card of this hand #{hand2.high_card?}"
+
+
+# puts "this is flush hand #{hand.flush?} "
+# puts "this is straight hand #{hand.straight?} "
+# puts "this is straight flush hand #{hand.straight_flush?}"
+# puts "this is royal straight flush hand #{hand.royal_flush?}"
+# puts "this is four of a kind #{hand.four_of_a_kind?}"
+# puts "this is three of a kind #{hand.three_of_a_kind?}"
+# puts "this is a two pairs #{hand.two_pair?}"
+# puts "this is a pair #{hand.pair?}"
+# puts "this is full house #{hand.full_house?}"
+
+

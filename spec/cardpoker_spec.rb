@@ -166,4 +166,59 @@ RSpec.describe Hand do
             end
         end
     end
+    describe "#high_card?" do
+        context "When the hand have nothing related" do
+            it "return the highest card" do
+                cards = [Card.new("Hearts", "10"), 
+                        Card.new("Spades", "5"), 
+                        Card.new("Hearts", "6"), 
+                        Card.new("Spades", "Ace"), 
+                        Card.new("Hearts", "King")]
+                hand = Hand.new(cards)
+                high_card = hand.high_card?
+                expect(high_card.suit).to eq "Spades"
+                expect(high_card.value).to eq "Ace"
+             end
+        end
+    end
+    describe "#high_card?" do
+        context "when 2 hands have a tiebreaker and a kicker" do
+            it "return the highest card" do
+                cards1 = [Card.new("Hearts", "10"), 
+                        Card.new("Spades", "10"), 
+                        Card.new("Hearts", "Queen"), 
+                        Card.new("Spades", "Queen"), 
+                        Card.new("Hearts", "King")]
+                
+                cards2 = [Card.new("Diamonds", "10"), 
+                        Card.new("Clubs", "10"), 
+                        Card.new("Clubs", "Queen"), 
+                        Card.new("Diamonds", "Queen"), 
+                        Card.new("Hearts", "Ace")]
+                                
+                hand1 = Hand.new(cards1)
+                hand2 = Hand.new(cards2)
+                expect(hand1).to be < hand2
+
+            end
+            it 'confirms hand2 is greater than hand1' do
+                cards1 = [Card.new("Hearts", "10"), 
+                        Card.new("Spades", "10"), 
+                        Card.new("Hearts", "Queen"), 
+                        Card.new("Spades", "Queen"), 
+                        Card.new("Hearts", "King")]
+                
+                cards2 = [Card.new("Diamonds", "10"), 
+                        Card.new("Clubs", "10"), 
+                        Card.new("Clubs", "Queen"), 
+                        Card.new("Diamonds", "Queen"), 
+                        Card.new("Hearts", "Ace")]
+                                
+                hand1 = Hand.new(cards1)
+                hand2 = Hand.new(cards2)
+                comparison_result = hand1 <=> hand2
+                expect(comparison_result).to be_negative
+            end
+        end
+    end
 end
