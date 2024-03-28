@@ -87,4 +87,17 @@ RSpec.describe Hand do
             end
         end
     end
+    describe "#royal_flush?" do
+        context 'when the hand is royal flush' do
+            it 'return true' do
+                cards = [Card.new("Hearts", "10"), 
+                        Card.new("Hearts", "Jack"), 
+                        Card.new("Hearts", "Queen"), 
+                        Card.new("Hearts", "King"), 
+                        Card.new("Hearts", "Ace")]
+                hand = Hand.new(cards)
+                expect(hand.royal_flush?).to eq true
+            end
+        end
+    end
 end
