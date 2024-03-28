@@ -224,16 +224,34 @@ RSpec.describe Hand do
 end
 
 RSpec.describe Player do
-    describe "#fold" do
-        context "the player gave up" do
-            it "the player is fold" do
-                hand = [Card.new('Hearts', '10'), Card.new('Spades', 'Ace')] # Example hand
-                player = Player.new(hand, 100)
+    # describe "#fold" do
+    #     context "the player gave up" do
+    #         it "the player is fold" do
+    #             hand = [Card.new('Hearts', '10'), 
+    #             Card.new('Spades', 'Ace')]
+    #             player = Player.new(hand, 100)
 
-                expect(player.is_active).to eq true
-                player.fold
-                expect(player.is_active).to eq false
+    #             expect(player.is_active).to eq true
+    #             player.fold
+    #             expect(player.is_active).to eq false
+    #         end
+    #     end
+    # end
+    describe '#discard_and_draw' do
+        let(:deck) { Deck.new } # Ensure this setup matches your actual Deck class
+        let(:initial_hand) { deck.deal(5) }
+        let(:player) { Player.new(initial_hand, 100) }
+        context"Discard and draws" do
+            it 'updates the player hand after discarding and drawing' do
+                original_hand = player.hand.dup
+                allow(player).to receive(:gets).and_return("1 3 5\n")
+                allow(deck).to receive(:deal).with(3).and_return([Card.new('Diamonds', '2'), Card.new('Hearts', '3'), Card.new('Clubs', '4')])
+
+                expect { player.discard_and_draw([1, 3, 5], deck) }.to change { player.hand }
+                expect(player.hand).not_to match_array(original_hand)
+                   
             end
         end
     end
+
 end

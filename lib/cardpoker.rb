@@ -209,10 +209,41 @@ class Player
     #to do list
 
     #discard and draw
+    def discard_and_draw(positions, deck)
+        puts "Hand: #{hand_to_s}"
+        puts "Enter the positions of the cards you wish to discard (e.g., 3 cards to discard the first and third cards):"
+        input = gets.chomp
+        discard_positions = input.split.map(&:to_i)
+        discard_cards(discard_positions)
+        draw_new_cards(discard_positions.size, deck)
+        puts "New hand: #{hand_to_s}"
+    end
+    private
+    
+    def discard_cards(positions)
+        positions.sort.reverse.each { |pos| @hand.delete_at(pos - 1) }
+    end
+
+    def draw_new_cards(number, deck)
+        new_cards = deck.deal(number)
+        @hand.concat(new_cards)
+    end
+
+    def hand_to_s
+        @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
+    end
     #fold
     #see
     #raise
-    
+
 
 end    
 
+deck = Deck.new
+initial_hand = deck.deal(5) 
+player = Player.new(initial_hand, 100) 
+puts player
+discard_positions = [1, 3, 5]
+
+player.discard_and_draw(discard_positions, deck)
+puts player
