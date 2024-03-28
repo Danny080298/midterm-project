@@ -71,6 +71,11 @@ class Hand
     end
 
     #three of a kind
+    def three_of_a_kind?
+        value_counts = @cards.each_with_object(Hash.new(0)) { |card, counts| counts[card.value] += 1 }
+        value_counts.any? { |_, count| count == 3 }
+    end
+
     #two pair 
     #one pair
     #high card
@@ -91,7 +96,7 @@ class Hand
 end
 
 
-cards = [Card.new("Hearts", "10"), Card.new("Clubs", "10"), Card.new("Spades", "10"), Card.new("Diamonds", "10"), Card.new("Hearts", "Ace")]
+cards = [Card.new("Hearts", "10"), Card.new("Clubs", "10"), Card.new("Spades", "10"), Card.new("Diamonds", "4"), Card.new("Hearts", "Ace")]
 
 hand = Hand.new(cards)
 
@@ -100,3 +105,4 @@ puts "this is straight hand #{hand.straight?} "
 puts "this is straight flush hand #{hand.straight_flush?}"
 puts "this is royal straight flush hand #{hand.royal_flush?}"
 puts "this is four of a kind #{hand.four_of_a_kind?}"
+puts "this is three of a kind #{hand.three_of_a_kind?}"
