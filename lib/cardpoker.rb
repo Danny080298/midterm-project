@@ -45,7 +45,7 @@ class Hand
     #royal straight flush
     def royal_flush?
         flush? && straight? && @cards.map { |card| card_value(card.value) }.include?(14) && @cards.map { |card| card_value(card.value) }.min == 10
-    end
+    end 
 
     #straight flush
     def straight_flush?
@@ -53,6 +53,11 @@ class Hand
     end
 
     #four of a kind
+    def four_of_a_kind?
+        value_counts = @cards.each_with_object(Hash.new(0)) { |card, counts| counts[card.value] += 1 }
+        value_counts.values.include?(4)
+    end
+
     #full house
     #flush
     def flush?
@@ -86,7 +91,7 @@ class Hand
 end
 
 
-cards = [Card.new("Hearts", "10"), Card.new("Hearts", "Jack"), Card.new("Hearts", "Queen"), Card.new("Hearts", "King"), Card.new("Hearts", "Ace")]
+cards = [Card.new("Hearts", "10"), Card.new("Clubs", "10"), Card.new("Spades", "10"), Card.new("Diamonds", "10"), Card.new("Hearts", "Ace")]
 
 hand = Hand.new(cards)
 
@@ -94,3 +99,4 @@ puts "this is flush hand #{hand.flush?} "
 puts "this is straight hand #{hand.straight?} "
 puts "this is straight flush hand #{hand.straight_flush?}"
 puts "this is royal straight flush hand #{hand.royal_flush?}"
+puts "this is four of a kind #{hand.four_of_a_kind?}"

@@ -100,4 +100,18 @@ RSpec.describe Hand do
             end
         end
     end
+    describe "#four_of_a_kind?" do
+        context "when the hand is four of a kind" do
+            it "return true" do
+                cards = [Card.new("Hearts", "10"), 
+                        Card.new("Clubs", "10"), 
+                        Card.new("Spades", "10"), 
+                        Card.new("Diamonds", "10"), 
+                        Card.new("Hearts", "Ace")]
+                hand = Hand.new(cards)
+                expect(hand.four_of_a_kind?).to eq true
+            end
+        end
+    end
+
 end
