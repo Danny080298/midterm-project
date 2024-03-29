@@ -222,17 +222,31 @@ class Player
     def fold
         @is_active = false
     end
-
+    
+    #see
     def see(current_bet_amount)
         amount_needed_to_call = current_bet_amount - @current_bet
     
         if amount_needed_to_call <= @pot
-          @pot -= amount_needed_to_call
-          @current_bet = current_bet_amount
-          puts "Player calls and matches the current bet of #{current_bet_amount}. Remaining pot: #{@pot}."
+            @pot -= amount_needed_to_call
+            @current_bet = current_bet_amount
+            puts "Player calls and matches the current bet of #{current_bet_amount}. Remaining pot: #{@pot}."
         else
-          puts "Player cannot cover the bet of #{current_bet_amount} with only #{@pot} in the pot."
-          fold
+            puts "Player cannot cover the bet of #{current_bet_amount} with only #{@pot} in the pot."
+            fold
+        end
+    end
+    def raise_bet(amount_to_raise)
+        total_bet = @current_bet + amount_to_raise
+    
+        if amount_to_raise <= 0
+            puts "Raise amount must be more than 0."
+        elsif total_bet > @pot
+            puts "Insufficient funds to raise. You have #{@pot}, but need #{total_bet}."
+        else
+            @pot -= amount_to_raise
+            @current_bet = total_bet
+            puts "Player raises the bet to #{total_bet}. Remaining pot: #{@pot}."
         end
     end
 
@@ -252,10 +266,7 @@ class Player
         @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
     end
   
-    #see
-    #raise
-
-
+    
 end    
 
 # deck = Deck.new
@@ -266,4 +277,6 @@ end
 
 # player.discard_and_draw(discard_positions, deck)
 # puts player
+
+# player.raise_bet(50)
 

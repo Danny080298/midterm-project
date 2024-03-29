@@ -254,7 +254,8 @@ RSpec.describe Player do
         end
     end
     describe '#see' do
-        let(:initial_hand) { [double('Card', suit: 'Hearts', value: '10'), double('Card', suit: 'Spades', value: 'Ace')] } 
+        let(:initial_hand) { [double('Card', suit: 'Hearts', value: '10'),
+                                double('Card', suit: 'Spades', value: 'Ace')] } 
         let(:player) { Player.new(initial_hand, 100) }
         context 'when the player has enough in the pot' do
             let(:current_bet_amount) { 50 }
@@ -275,6 +276,34 @@ RSpec.describe Player do
                     .to change { player.is_active }.from(true).to(false)
                     .and change { player.pot }.by(0) 
 
+            end
+        end
+    end
+    describe '#raise_bet' do
+        let(:player) { Player.new([], 100) }
+        context 'when the player has enough in the pot to cover the raise' do
+    
+            it 'successfully raises the bet and reduces the pot' do
+                player.raise_bet(20)
+                expect(player.current_bet).to eq 20
+                expect(player.pot).to eq 80
+            end
+        end
+        context 'when the player attempts to raise with insufficient funds' do
+
+            it 'does not allow raising the bet with insufficient funds' do
+                player.raise_bet(150) 
+                expect(player.current_bet).to eq 0
+                expect(player.pot).to eq 100 
+            end
+        end
+
+        context 'when the player attempts to raise the bet by an invalid amount (e.g., zero)' do
+            
+            it 'does not allow raising the bet by an invalid amount (e.g., zero)' do
+                player.raise_bet(0)
+                expect(player.current_bet).to eq 0
+                expect(player.pot).to eq 100
             end
         end
     end
