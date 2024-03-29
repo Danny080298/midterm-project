@@ -42,8 +42,7 @@ class Hand
         @cards = cards
     end
     def to_s
-        card_descriptions = @cards.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
-        "Hand contains: #{card_descriptions}"
+        @cards.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
     end
     
     RANKING = {
@@ -67,7 +66,7 @@ class Hand
         when 'pair','two_pair','three_of_a_kind','four_of_a_kind'
             compare_multiples(other_hand)
         when 'straight','straight_flush','high_card'
-            high_card<=> other_hand.high_card
+            high_card?<=> other_hand.high_card
         when 'flush', 'full_house'
             high_card <=> other_hand.high_card
         else
@@ -86,7 +85,14 @@ class Hand
         card_value(our_kickers.value) <=> card_value(other_kickers.value)
     end
 
+    def discard_by_positions(positions)
+        positions.sort.reverse.each { |pos| @cards.delete_at(pos - 1) }
+    end
 
+    def rank
+        card_ranks = @cards.map { |card| card_value(card.value) }
+        card_ranks.max
+    end
     #best rank
     def best_rank
         return 'royal_flush' if royal_flush?
@@ -159,17 +165,18 @@ class Hand
     private
 
     def card_value(value)
-        ranks = {'2' => 2, '3' => 3, '4' => 4, '5' => 5, 
+        values = {'2' => 2, '3' => 3, '4' => 4, '5' => 5, 
         '6' => 6, '7' => 7, '8' => 8, '9' => 9, '10' => 10, 
         'Jack' => 11, 'Queen' => 12, 'King' => 13, 'Ace' => 14}
-        rank = ranks[value]
         
-        unless rank
-          puts "Unexpected card value: #{value}. Please check the card values."
-          rank = 0
-        end
+        values[value] || 0
+        
+        # unless rank
+        #   puts "Unexpected card value: #{value}. Please check the card values."
+        #   rank = 0
+        # end
        
-        rank
+        # rank
     end
 
     def compare_multiples(other_hand)
@@ -188,26 +195,21 @@ class Hand
     end
 end
 
-
 class Player
     attr_accessor :hand, :pot, :current_bet
     attr_reader :is_active
-
     def initialize(hand, pot)
         @hand = hand
         @pot = pot
         @is_active = true
         @current_bet = 0
     end
-
     def to_s
         hand_description = @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
         "Hand: #{hand_description}"
         "Pot: #{@pot}"
     end
-
     #to do list
-
     #discard and draw
     def discard_and_draw(positions, deck)
         puts "Hand: #{hand_to_s}"
@@ -222,12 +224,16 @@ class Player
     def fold
         @is_active = false
     end
-    
+
+
     #see
     def see(current_bet_amount)
         amount_needed_to_call = current_bet_amount - @current_bet
-    
+
         if amount_needed_to_call <= @pot
+          @pot -= amount_needed_to_call
+          @current_bet = current_bet_amount
+          puts "Player calls and matches the current bet of #{current_bet_amount}. Remaining pot: #{@pot}."
             @pot -= amount_needed_to_call
             @current_bet = current_bet_amount
             puts "Player calls and matches the current bet of #{current_bet_amount}. Remaining pot: #{@pot}."
@@ -238,45 +244,56 @@ class Player
     end
     def raise_bet(amount_to_raise)
         total_bet = @current_bet + amount_to_raise
-    
+
         if amount_to_raise <= 0
             puts "Raise amount must be more than 0."
         elsif total_bet > @pot
             puts "Insufficient funds to raise. You have #{@pot}, but need #{total_bet}."
         else
+          puts "Player cannot cover the bet of #{current_bet_amount} with only #{@pot} in the pot."
+          fold
             @pot -= amount_to_raise
             @current_bet = total_bet
             puts "Player raises the bet to #{total_bet}. Remaining pot: #{@pot}."
         end
     end
 
-
     private
     
     def discard_cards(positions)
         positions.sort.reverse.each { |pos| @hand.delete_at(pos - 1) }
     end
-
     def draw_new_cards(number, deck)
         new_cards = deck.deal(number)
         @hand.concat(new_cards)
     end
-
     def hand_to_s
         @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
     end
-  
-    
-end    
 
-# deck = Deck.new
-# initial_hand = deck.deal(5) 
-# player = Player.new(initial_hand, 100) 
-# puts player
-# discard_positions = [1, 3, 5]
+end   
 
-# player.discard_and_draw(discard_positions, deck)
-# puts player
+class Game
+    attr_reader :player, :deck
+    attr_accessor :pot, :current_bet
 
-# player.raise_bet(50)
+    FEE = 25
 
+    def intialize(id, money = 2000)
+
+        @players = id.map {|id|Player.new(id, money)}
+        @deck = Deck.new
+        @pot = 0
+        @current_bet = FEE
+    end
+
+
+    #list to do
+    #take turns for each player
+    #collect bet(fee)
+    #deal cards
+    #ask player discard and draw
+    #determine the winner
+    #restart the game
+
+end
