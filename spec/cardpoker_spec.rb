@@ -311,6 +311,7 @@ RSpec.describe Player do
 
 end
 
+
 RSpec.describe Game do
     let(:player) { ['Player1', 'Player2'] }
     let(:initial_money) { 2000 }

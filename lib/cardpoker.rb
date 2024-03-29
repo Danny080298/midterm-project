@@ -196,77 +196,113 @@ class Hand
 end
 
 class Player
-    attr_accessor :hand, :pot, :current_bet
-    attr_reader :is_active
-    def initialize(hand, pot)
-        @hand = hand
-        @pot = pot
-        @is_active = true
-        @current_bet = 0
+    attr_accessor :hand, :money, :folded
+    attr_reader :id
+
+
+    def initialize(id, money)
+        @id = id
+        @money = money
+        @hand = []
+        @folded = false
     end
-    def to_s
-        hand_description = @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
-        "Hand: #{hand_description}"
-        "Pot: #{@pot}"
+
+    # def to_s
+    #     hand_description = @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
+    #     "Hand: #{hand_description}"
+    #     "Pot: #{@pot}"
+    # end
+
+    def place_bet(amount)
+        raise "Invalid amount" if @money < amount
+        @money -= amount
+    end
+
+    def prize(amount)
+        @money += amount
+    end
+
+    def discard_card(card_posit)
+        @hand.discard_by_positions(card_posit)
     end
     #to do list
     #discard and draw
     def discard_and_draw(positions, deck)
-        puts "Hand: #{hand_to_s}"
-        puts "Enter the positions of the cards you wish to discard (e.g., 3 cards to discard the first and third cards):"
-        input = gets.chomp
-        discard_positions = input.split.map(&:to_i)
-        discard_cards(discard_positions)
-        draw_new_cards(discard_positions.size, deck)
-        puts "New hand: #{hand_to_s}"
-    end
-    #fold
-    def fold
-        @is_active = false
+        puts "#{@id} your current hand is: " + @hand.cards.map.with_index(1) { |card| "#{card}" }.join(', ')
+
+        num_card = 0
+        loop do
+            puts "How many cards to discard? (0 - 3)"
+            num_card = gets.chomp.to_i
+
+            if num_card.between?(0,3)
+                break
+            else
+                puts"Try again!"
+            end
+        end
+
+        discard_posit = []
+        if num_card > 0
+            puts"Please enter #{num_to_discard == 1 ? 'the number' : 'each number'} of the card(s) you wish to discard, separated by spaces (e.g., 1 3): "
+
+
+            while discard_posit.empty?
+                input_card = gets.chomp.split.map(&:to_i).map { |num|num-1}.uniq
+
+                if input_card.length == num_to_discard && input_card.all? {|index|index.between?(0, @hand.cards.length - 1 )}
+                    discard_posit = input_card
+                else
+                    puts "Invalid input, try again"
+
+                end
+            end
+        end
+        discard_posit 
     end
 
+
+    #fold
+    
+    def fold
+        @folded = true
+    end
+
+    def call(bets)
+        raise "Invalid amount to call" if bets > @money
+        @money -= bets
+    end
 
     #see
-    def see(current_bet_amount)
-        amount_needed_to_call = current_bet_amount - @current_bet
-    
-        if amount_needed_to_call <= @pot
-            @pot -= amount_needed_to_call
-            @current_bet = current_bet_amount
-            puts "Player calls and matches the current bet of #{current_bet_amount}. Remaining chip stack: #{@chip_stack}."
+    def see(current_bet)
+        if @money >= current_bet
+            place_bet(current_bet)
+            true
         else
-            puts "Player cannot cover the bet of #{current_bet_amount} with only #{@chip_stack} in the chip stack."
-            fold
-        end
-    end
-    def raise_bet(amount_to_raise)
-        total_bet = @current_bet + amount_to_raise
-
-        if amount_to_raise <= 0
-            puts "Raise amount must be more than 0."
-        elsif total_bet > @pot
-            puts "Insufficient funds to raise. You have #{@pot}, but need #{total_bet}."
-        else
-          puts "Player cannot cover the bet of #{current_bet} with only #{@pot} in the pot."
-          fold
-            @pot -= amount_to_raise
-            @current_bet = total_bet
-            puts "Player raises the bet to #{total_bet}. Remaining pot: #{@pot}."
+            false
         end
     end
 
-    private
+    #raise
+    def raise(current_bet, added_amount)
+        total_bet = current_bet + added_amount
+        raise "Invalid amount" if @money < total_bet
+        @money -= total_bet
+        total_bet
+    end
+
+    # private
     
-    def discard_cards(positions)
-        positions.sort.reverse.each { |pos| @hand.delete_at(pos - 1) }
-    end
-    def draw_new_cards(number, deck)
-        new_cards = deck.deal(number)
-        @hand.concat(new_cards)
-    end
-    def hand_to_s
-        @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
-    end
+    # def discard_cards(positions)
+    #     positions.sort.reverse.each { |pos| @hand.delete_at(pos - 1) }
+    # end
+    # def draw_new_cards(number, deck)
+    #     new_cards = deck.deal(number)
+    #     @hand.concat(new_cards)
+    # end
+    # def hand_to_s
+    #     @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
+    # end
 
 end   
 
