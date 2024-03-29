@@ -229,16 +229,13 @@ class Player
     #see
     def see(current_bet_amount)
         amount_needed_to_call = current_bet_amount - @current_bet
-
+    
         if amount_needed_to_call <= @pot
-          @pot -= amount_needed_to_call
-          @current_bet = current_bet_amount
-          puts "Player calls and matches the current bet of #{current_bet_amount}. Remaining pot: #{@pot}."
             @pot -= amount_needed_to_call
             @current_bet = current_bet_amount
-            puts "Player calls and matches the current bet of #{current_bet_amount}. Remaining pot: #{@pot}."
+            puts "Player calls and matches the current bet of #{current_bet_amount}. Remaining chip stack: #{@chip_stack}."
         else
-            puts "Player cannot cover the bet of #{current_bet_amount} with only #{@pot} in the pot."
+            puts "Player cannot cover the bet of #{current_bet_amount} with only #{@chip_stack} in the chip stack."
             fold
         end
     end
@@ -250,7 +247,7 @@ class Player
         elsif total_bet > @pot
             puts "Insufficient funds to raise. You have #{@pot}, but need #{total_bet}."
         else
-          puts "Player cannot cover the bet of #{current_bet_amount} with only #{@pot} in the pot."
+          puts "Player cannot cover the bet of #{current_bet} with only #{@pot} in the pot."
           fold
             @pot -= amount_to_raise
             @current_bet = total_bet
@@ -274,7 +271,7 @@ class Player
 end   
 
 class Game
-    attr_reader :player, :deck
+    attr_reader :player, :deck 
     attr_accessor :pot, :current_bet
 
     FEE = 25
@@ -290,10 +287,39 @@ class Game
 
     #list to do
     #take turns for each player
+    def take_turns
+        puts "Pot: #{@pot}"
+        @players.each do |player|
+            hand_player = if player.fold
+                "Folded"
+            else
+                "#{player.hand.cards.map(&:to_s).join(', ')}"
+            end
+            puts "#{player.id}'s hand: #{hand_player}"
+            puts "#{player.id}'s chip stack: #{player.money}"
+        end
+    end
+    def players_discard_and_draw
+        @players.each do |player|
+          puts "\n#{player.id}, it's your turn to discard and draw."
+          cards_to_discard = player.decide_cards_to_discard
+          player.discard_cards(cards_to_discard)
+          new_cards = @deck.deal(cards_to_discard.length)
+          player.hand.cards.concat(new_cards)
+          puts "#{player.id}, your new hand is: #{player.hand.cards.map(&:to_s).join(', ')}"
+          
+          post_discard_action(player)  # Invoke post-discard actions here
+        end
+    end
     #collect bet(fee)
     #deal cards
+    def deal_cards
+        @deck.shuffle!
+        @players.each { |player| player.hand = Hand.new(@deck.deal(5)) }
+    end
     #ask player discard and draw
     #determine the winner
     #restart the game
+
 
 end

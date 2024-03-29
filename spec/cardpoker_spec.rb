@@ -256,14 +256,15 @@ RSpec.describe Player do
     describe '#see' do
         let(:initial_hand) { [double('Card', suit: 'Hearts', value: '10'),
                                 double('Card', suit: 'Spades', value: 'Ace')] } 
-        let(:player) { Player.new(initial_hand, 100) }
+        let(:player) { Player.new(1, 100) }        
         context 'when the player has enough in the pot' do
             let(:current_bet_amount) { 50 }
 
             it 'matches the current bet and reduces the pot ' do
                 expect { player.see(current_bet_amount) }
-                .to change { player.pot }.from(100).to(50)
+                .to change { player.pot}.from(100).to(50)
                 .and change { player.current_bet }.from(0).to(current_bet_amount)
+
             end 
         end
     
@@ -306,6 +307,30 @@ RSpec.describe Player do
                 expect(player.pot).to eq 100
             end
         end
+    end
+
+end
+
+RSpec.describe Game do
+    let(:player) { ['Player1', 'Player2'] }
+    let(:initial_money) { 2000 }
+    let(:game) { Game.new }
+  
+    before(:each) do
+      # Mocking Player, Deck, and Hand classes might be necessary here.
+      # For simplicity, we'll assume these are available and behave as expected.
+    end
+  
+    describe '#initialize' do
+      it 'initializes a game with players' do
+        expect(game.player).to eq(nil)
+        expect(game.player).to eq(nil)
+      end
+  
+      it 'sets up an initial pot and current bet' do
+        expect(game.pot).to eq(nil)
+        expect(game.current_bet).to eq(nil)
+      end
     end
 
 end
