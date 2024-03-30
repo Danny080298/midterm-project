@@ -286,30 +286,53 @@ RSpec.describe Player do
       end
     end
   
-    # Additional tests can be added for #discard_card, #prize, and other methods as needed.
 end
 
 
 RSpec.describe Game do
-    let(:player) { ['Player1', 'Player2'] }
-    let(:initial_money) { 2000 }
-    let(:game) { Game.new }
-  
-    before(:each) do
-      # Mocking Player, Deck, and Hand classes might be necessary here.
-      # For simplicity, we'll assume these are available and behave as expected.
+    let(:player1) { "Player1" }
+    let(:player2) { "Player2" }
+    let(:player1) { instance_double("Player", folded: false) }
+    let(:player2) { instance_double("Player", folded: true) }
+    let(:player1) { instance_double("Player", :id => "Player1", :folded => false, :money => 1000) }
+    let(:player2) { instance_double("Player", :id => "Player2", :folded => false, :money => 1000) }
+    let(:deck) { instance_double("Deck") }
+    let(:hand) { instance_double("Hand") }
+    let(:game) { Game.new ([player1, player2]) }
+
+    before do
+        allow(Deck).to receive(:new).and_return(deck)
+        allow(deck).to receive(:shuffle!)
+        allow(deck).to receive(:deal).with(5).and_return(hand)
+        allow(Player).to receive(:new).with(anything, anything).and_return(player1, player2)
+        allow(hand).to receive(:<=>).and_return(0)
     end
+
   
     describe '#initialize' do
       it 'initializes a game with players' do
-        expect(game.player).to eq(nil)
-        expect(game.player).to eq(nil)
+        expect(game.players.size).to eq(2)
+        
       end
   
       it 'sets up an initial pot and current bet' do
-        expect(game.pot).to eq(nil)
-        expect(game.current_bet).to eq(nil)
+        expect(game.pot).to eq(0)
+        expect(game.current_bet).to eq(25)
       end
     end
-
+    describe '#collect_bet' do
+        it 'collects bets from all players and adds to pot' do
+            allow(player1).to receive(:place_bet).with(Game::FEE).and_return(Game::FEE)
+            allow(player2).to receive(:place_bet).with(Game::FEE).and_return(Game::FEE)
+            game.collect_bet
+            expect(game.pot).to eq(Game::FEE * 2)
+        end
+    end
+    describe '#determine_winner' do
+        it 'determines the winner among non-folded players' do
+            allow(player1).to receive(:hand).and_return(hand)
+            allow(player2).to receive(:hand).and_return(hand)
+            expect(game.determine_winner).to eq(player1).or eq(player2)
+        end
+    end
 end

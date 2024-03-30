@@ -207,11 +207,6 @@ class Player
         @folded = false
     end
 
-    # def to_s
-    #     hand_description = @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
-    #     "Hand: #{hand_description}"
-    #     "Pot: #{@pot}"
-    # end
 
     def place_bet(amount)
         raise "Invalid amount" if @money < amount
@@ -291,35 +286,20 @@ class Player
         total_bet
     end
 
-    # private
-    
-    # def discard_cards(positions)
-    #     positions.sort.reverse.each { |pos| @hand.delete_at(pos - 1) }
-    # end
-    # def draw_new_cards(number, deck)
-    #     new_cards = deck.deal(number)
-    #     @hand.concat(new_cards)
-    # end
-    # def hand_to_s
-    #     @hand.map { |card| "#{card.value} of #{card.suit}" }.join(', ')
-    # end
-
 end   
 
 class Game
-    attr_reader :player, :deck 
+    attr_reader :players, :deck 
     attr_accessor :pot, :current_bet
 
     FEE = 25
 
-    def intialize(id, money = 2000)
-
-        @players = id.map {|id|Player.new(id, money)}
+    def initialize(players, money = 2000)
+        @players = players.map { |player_id| Player.new(player_id, money) }
         @deck = Deck.new
         @pot = 0
         @current_bet = FEE
     end
-
 
     #list to do
     #take turns for each player
@@ -335,6 +315,8 @@ class Game
             puts "#{player.id}'s chip stack: #{player.money}"
         end
     end
+
+    #ask player discard and draw
     def players_discard_and_draw
         @players.each do |player|
           puts "\n#{player.id}, it's your turn to discard and draw."
@@ -348,13 +330,39 @@ class Game
         end
     end
     #collect bet(fee)
+    def collect_bet
+        @players.each do |player|
+            @pot += player.place_bet(FEE)
+        end
+    end
+
     #deal cards
     def deal_cards
         @deck.shuffle!
         @players.each { |player| player.hand = Hand.new(@deck.deal(5)) }
     end
-    #ask player discard and draw
+    
     #determine the winner
+
+    def determine_winner
+        remain_players = @players.reject(&:folded)
+        win_player = remain_players.max do |player1, player2|
+            player1.hand <=> player2.hand
+        end
+        win_player
+    end
+    def prize
+        winner = determine_winner
+        if winner
+            winner.money += @pot
+            puts "#{winner.id} win the prize of $#{@pot}"
+            @pot = 0
+        else
+            puts "No winner could be found"
+        end
+    end
+
+    
     #restart the game
 
 
