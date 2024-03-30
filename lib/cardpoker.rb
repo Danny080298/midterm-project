@@ -394,6 +394,7 @@ class Game
         return if player.folded
         valid_action = false
         until valid_action
+            puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
             puts "#{player.id}, would you like to 1: Call, 2: Raise, 3: Fold ???"
             action = gets.chomp.downcase
             case action
@@ -415,7 +416,7 @@ class Game
                     @pot += (@current_bet + raise_money) 
                     @current_bet += raise_money
                     puts "#{player.id} raises to #{@current_bet}."
-                    puts "Current pot is #{current_bet}"
+                    puts "******Current pot is #{current_bet}******"
 
                 else
                     puts " Invalid amount, folded turn"
@@ -424,6 +425,7 @@ class Game
                 valid_action = true
             when '3'
                 player.fold
+
                 puts "#{player.id} has folded."
                 valid_action = true
             else

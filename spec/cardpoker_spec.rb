@@ -301,6 +301,7 @@ RSpec.describe Game do
     let(:game) { Game.new ([player1, player2]) }
 
     before do
+        allow(Player).to receive(:new).and_return(player1, player2)
         allow(Deck).to receive(:new).and_return(deck)
         allow(deck).to receive(:shuffle!)
         allow(deck).to receive(:deal).with(5).and_return(hand)
@@ -328,6 +329,7 @@ RSpec.describe Game do
             expect(game.pot).to eq(Game::FEE * 2)
         end
     end
+
     describe '#determine_winner' do
         it 'determines the winner among non-folded players' do
             allow(player1).to receive(:hand).and_return(hand)
@@ -335,5 +337,5 @@ RSpec.describe Game do
             expect(game.determine_winner).to eq(player1).or eq(player2)
         end
     end
-    
+
 end
