@@ -221,6 +221,7 @@ class Player
         @hand.discard_by_positions(card_posit)
     end
     #to do list
+
     #discard and draw
     def discard_and_draw(positions, deck)
         puts "#{@id} your current hand is: " + @hand.cards.map.with_index(1) { |card| "#{card}" }.join(', ')
@@ -239,13 +240,13 @@ class Player
 
         discard_posit = []
         if num_card > 0
-            puts"Please enter #{num_to_discard == 1 ? 'the number' : 'each number'} of the card(s) you wish to discard, separated by spaces (e.g., 1 3): "
+            puts"Please enter #{num_card== 1 ? 'the number' : 'each number'} of the card(s) you wish to discard, separated by spaces (e.g., 1 3): "
 
 
             while discard_posit.empty?
                 input_card = gets.chomp.split.map(&:to_i).map { |num|num-1}.uniq
 
-                if input_card.length == num_to_discard && input_card.all? {|index|index.between?(0, @hand.cards.length - 1 )}
+                if input_card.length == num_card && input_card.all? {|index|index.between?(0, @hand.cards.length - 1 )}
                     discard_posit = input_card
                 else
                     puts "Invalid input, try again"
@@ -311,22 +312,24 @@ class Game
             else
                 "#{player.hand.cards.map(&:to_s).join(', ')}"
             end
-            puts "#{player.id}'s hand: #{hand_player}"
-            puts "#{player.id}'s chip stack: #{player.money}"
+            puts "======================================"
+            puts "#{player.id}'s Money: #{player.money}"
         end
     end
 
     #ask player discard and draw
     def players_discard_and_draw
         @players.each do |player|
-          puts "\n#{player.id}, it's your turn to discard and draw."
-          cards_to_discard = player.decide_cards_to_discard
-          player.discard_cards(cards_to_discard)
-          new_cards = @deck.deal(cards_to_discard.length)
-          player.hand.cards.concat(new_cards)
-          puts "#{player.id}, your new hand is: #{player.hand.cards.map(&:to_s).join(', ')}"
+            puts "\n#{player.id}, it's your turn to discard and draw."
+  
+            card_positions_to_discard = [] # This would be determined based on player input or strategy
+            new_cards = @deck.deal(card_positions_to_discard.length) # Assuming we have a Deck instance
+            player.discard_and_draw(card_positions_to_discard, @deck)
+        
+            player.hand.cards.concat(new_cards)
+            puts "#{player.id}, your new hand is: #{player.hand.cards.map(&:to_s).join(', ')}"
           
-          post_discard_action(player)  # Invoke post-discard actions here
+            next_player(player)  # Invoke post-discard actions here
         end
     end
     #collect bet(fee)
@@ -364,6 +367,75 @@ class Game
 
     
     #restart the game
+    def start 
+        loop do
+            collect_bet
+            deal_cards
+            players_discard_and_draw
+            prize
+            take_turns
+        end
+    end
+    def restart
+        @deck = Deck.new
+        @deck.shuffle!
+        @players.each do |player|
+            player.hand = []
 
+            player.folded = false
+        end
+        @pot = 0
+        @current_bet = 0
+
+    end
+    private
+
+    def next_player(player)
+        return if player.folded
+        valid_action = false
+        until valid_action
+            puts "#{player.id}, would you like to 1: Call, 2: Raise, 3: Fold ???"
+            action = gets.chomp.downcase
+            case action
+            when '1'
+                if player.money >= @current_bet
+                    player.money -= @current_bet
+                    @pot += @current_bet
+                    puts "#{player.id}calls with #{current_bet}"
+                else
+                    puts "No enough bet to call. Folded turn"
+                    player.fold
+                end
+                valid_action = true
+            when '2'
+                puts "Current bet is #{@current_bet}. How much do you want to raise? "
+                raise_money = gets.to_i
+                if raise_money > 0 && player.money >= (@current_bet +raise_money)
+                    player.money -= (@current_bet + raise_money)
+                    @pot += (@current_bet + raise_money) 
+                    @current_bet += raise_money
+                    puts "#{player.id} raises to #{@current_bet}."
+                    puts "Current pot is #{current_bet}"
+
+                else
+                    puts " Invalid amount, folded turn"
+                    player.fold
+                end
+                valid_action = true
+            when '3'
+                player.fold
+                puts "#{player.id} has folded."
+                valid_action = true
+            else
+                puts "Invalid input, try again"
+            end
+        end
+    end
 
 end
+players = [Player.new(1, 1000), Player.new(2, 1000)] 
+game = Game.new(players)
+
+game.start
+
+game.take_turns
